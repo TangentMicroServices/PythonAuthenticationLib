@@ -45,8 +45,8 @@ class TokenAuthBackend(object):
 class RESTTokenAuthBackend(authentication.BaseAuthentication):
     
     def _get_token(self, request):
-	   token = request.META.get('HTTP_AUTHORIZATION', None)
-       print "RESTTokenAuthBackend._get_token: {0}" . format(token)
+        token = request.META.get('HTTP_AUTHORIZATION', None)
+        print "RESTTokenAuthBackend._get_token: {0}" . format(token)
 
         if not token is None:
             token = token.replace("Token ", "")
