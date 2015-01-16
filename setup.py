@@ -13,6 +13,6 @@ setup(
     install_requires=required,
     url='https://github.com/TangentMicroServices/PythonAuthenticationLib',
     license='MIT licence, see LICENCE',
-    description='Authentication lib for Tangent Micro Services'
+    description='Authentication lib for Tangent Micro Services',
     long_description=open('README.md').read(),
 )
