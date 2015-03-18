@@ -14,7 +14,7 @@ class TokenAuthBackend(object):
             'content-type': 'application/json', 
             'Authorization':'Token {0}' . format (token)
         }
-        url = '{0}/users/me/' . format(settings.USERSERVICE_BASE_URL)
+        url = '{0}/api/v1/users/me/' . format(settings.USERSERVICE_BASE_URL)
         return requests.get(url, headers=headers)
 
     def authenticate(self, token):
@@ -47,7 +47,7 @@ class RESTTokenAuthBackend(authentication.BaseAuthentication):
     
     def _get_token(self, request):
         token = request.META.get('HTTP_AUTHORIZATION', None)
-        print "RESTTokenAuthBackend._get_token: {0}" . format(token)
+        #print "RESTTokenAuthBackend._get_token: {0}" . format(token)
 
         if not token is None:
             token = token.replace("Token ", "")
