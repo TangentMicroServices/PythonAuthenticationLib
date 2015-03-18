@@ -26,13 +26,14 @@ class TokenAuthBackend(object):
 
         if response.status_code == 200:
             username = response.json().get("username", False)
+            id = response.json().get("id", False)
             
             try:
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
                 # Create a new user. Note that we can set password
                 # to anything, because it won't be checked; 
-                user = User(username=username, password='not important')
+                user = User(username=username, password='not important', id=id)
                 user.save()
             return user
         return None
