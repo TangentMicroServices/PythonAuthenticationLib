@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 from rest_framework import authentication
 from rest_framework import exceptions
+from rest_framework.permissions import SAFE_METHODS
 
 class TokenAuthBackend(object):
 
@@ -13,7 +14,7 @@ class TokenAuthBackend(object):
             'content-type': 'application/json', 
             'Authorization':'Token {0}' . format (token)
         }
-        url = '{0}/users/me/' . format(settings.USER_SERVICE_BASE_URL)
+        url = '{0}/users/me/' . format(settings.USERSERVICE_BASE_URL)
         return requests.get(url, headers=headers)
 
     def authenticate(self, token):
