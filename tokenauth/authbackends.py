@@ -8,6 +8,18 @@ from rest_framework.permissions import SAFE_METHODS
 
 class TokenAuthBackend(object):
 
+    def _create_new_user(self, data):
+        fields = ['id', 'first_name', 'last_name', 'username', 'email', 'is_staff', 'is_superuser']
+        user_data = {}
+        for field in fields: 
+            value = data.get(field, None)
+            if value is not None:
+                user_data[field] = value
+        
+        user = User(**user_data)
+        user.save()
+        return user
+
     def _fetch_user(self, token):
 
         headers = {
@@ -25,16 +37,17 @@ class TokenAuthBackend(object):
         response = self._fetch_user(token)
 
         if response.status_code == 200:
-            username = response.json().get("username", False)
-            id = response.json().get("id", False)
+
+            username = response.json().get("username", False)            
             
             try:
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
                 # Create a new local user. Note that we can set password
                 # to anything, because it won't be checked; 
-                user = User(username=username, password='not important', id=id)
-                user.save()
+                user = self._create_new_user(response.json())
+                #user = User(username=username, password='not important', id=id)
+                #user.save()
             return user
         return None
 
