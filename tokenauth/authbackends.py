@@ -31,7 +31,7 @@ class TokenAuthBackend(object):
             try:
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
-                # Create a new user. Note that we can set password
+                # Create a new local user. Note that we can set password
                 # to anything, because it won't be checked; 
                 user = User(username=username, password='not important', id=id)
                 user.save()

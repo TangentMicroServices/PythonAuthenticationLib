@@ -17,7 +17,7 @@ class TokenAuthBackendTestCase(TestCase):
 	def test_authenticate(self):
 
 		# setup:
-		url = '{0}/users/me/' . format(settings.USER_SERVICE_BASE_URL)		
+		url = '{0}/api/v1/users/me/' . format(settings.USERSERVICE_BASE_URL)		
 		response_string = '{"username": "TEST"}'
 		responses.add(responses.GET, url,
                   body=response_string, status=200,
@@ -37,7 +37,7 @@ class TokenAuthBackendTestCase(TestCase):
 	@responses.activate
 	def test_authentication_fails(self):
 
-		url = '{0}/users/me/' . format(settings.USER_SERVICE_BASE_URL)
+		url = '{0}/api/v1/users/me/' . format(settings.USERSERVICE_BASE_URL)
 		token = 'some token'
 
 		response_string = '{"message": "Invalid Toke"}'
@@ -47,6 +47,7 @@ class TokenAuthBackendTestCase(TestCase):
 
 		backend = TokenAuthBackend()
 		user = backend.authenticate(token)
+
 		assert len(responses.calls) == 1, 'Expect only 1 call'
 		assert user is None, 'Expect None to be returned if invalid user'
 
@@ -60,7 +61,7 @@ class TokenAuthMiddleWareTestCase(TestCase):
 	@responses.activate
 	def test_get_authenticates_a_valid_user(self):
 
-		url = '{0}/users/me/' . format(settings.USER_SERVICE_BASE_URL)		
+		url = '{0}/api/v1/users/me/' . format(settings.USERSERVICE_BASE_URL)		
 		response_string = '{"username": "TEST"}'
 		responses.add(responses.GET, url,
                   body=response_string, status=200,
@@ -76,7 +77,7 @@ class TokenAuthMiddleWareTestCase(TestCase):
 	@responses.activate
 	def test_get_rejects_invalid_user(self):
 
-		url = '{0}/users/me/' . format(settings.USER_SERVICE_BASE_URL)		
+		url = '{0}/api/v1/users/me/' . format(settings.USERSERVICE_BASE_URL)		
 		responses.add(responses.GET, url,
                   body='', status=401,
                   content_type='application/json')
