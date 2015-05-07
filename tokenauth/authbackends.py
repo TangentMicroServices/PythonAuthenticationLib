@@ -6,19 +6,37 @@ from rest_framework import authentication
 from rest_framework import exceptions
 from rest_framework.permissions import SAFE_METHODS
 
-class TokenAuthBackend(object):
+class UserSyncronizer(object):
 
-    def _create_new_user(self, data):
-        fields = ['id', 'first_name', 'last_name', 'username', 'email', 'is_staff', 'is_superuser']
+    fields = ['id', 'first_name', 'last_name', 'username', 
+              'email', 'is_staff', 'is_superuser']
+
+    def map_user_data(self, data):
         user_data = {}
-        for field in fields: 
+        for field in self.fields: 
             value = data.get(field, None)
             if value is not None:
                 user_data[field] = value
+
+        return user_data
+
+
+    def sync(self, data):
         
-        user = User(**user_data)
+        user_data = self.map_user_data(data)
+        try:
+            user = User.objects.get(username=data.get("username", None))
+            
+            for key, value in user_data.items():
+                print "set {0} to {1}" . format (key, value)
+                setattr(user, key, value)
+
+        except User.DoesNotExist:
+            user = User(**user_data)
         user.save()
         return user
+
+class TokenAuthBackend(object):
 
     def _fetch_user(self, token):
 
@@ -37,17 +55,8 @@ class TokenAuthBackend(object):
         response = self._fetch_user(token)
 
         if response.status_code == 200:
-
-            username = response.json().get("username", False)            
-            
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                # Create a new local user. Note that we can set password
-                # to anything, because it won't be checked; 
-                user = self._create_new_user(response.json())
-                #user = User(username=username, password='not important', id=id)
-                #user.save()
+            syncer = UserSyncronizer()
+            user = syncer.sync(response.json())
             return user
         return None
 

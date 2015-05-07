@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from tokenauth.authbackends import TokenAuthBackend
+from tokenauth.authbackends import TokenAuthBackend, UserSyncronizer
 from tokenauth.test.mocks import mock_auth_success, mock_auth_failure
 
 import requests 
@@ -11,8 +11,62 @@ import mock
 
 class TokenAuthBackendTestCase(TestCase):
 
-	def setup(self):
-		pass
+	def setUp(self):
+		self.data = {
+		  "id": 1,
+		  "first_name": "Joe",
+		  "last_name": "Soap",
+		  "username": "joe.soap",
+		  "email": "joe@soap.com",
+		  "is_staff": True,
+		  "is_superuser": True,
+		  "profile": {
+		    "contact_number": "",
+		    "status_message": None,
+		    "bio": None
+		  },
+		  "authentications": [],
+		  "roles": []
+		}
+
+	def tearDown(self):
+		for user in User.objects.all(): user.delete()
+
+	def test__sync_user_new_user(self):
+
+		syncer = UserSyncronizer()
+		user = syncer.sync(self.data)
+
+		new_user = User.objects.get(username="joe.soap")
+
+		assert new_user.first_name == "Joe"
+		assert new_user.last_name == "Soap"
+		assert new_user.email == "joe@soap.com"
+		assert new_user.is_staff == True
+		assert new_user.is_superuser == True
+
+	def test__sync_user_existing_user(self):
+
+		data = {
+			"id": 1, 
+			"username": "joe.soap", 
+			"first_name": "Peter",
+			"last_name": "Pan",
+			"is_staff": False,
+			"is_superuser": False,
+		}
+
+		existing_user = User.objects.create(**data)
+
+		syncer = UserSyncronizer()
+		user = syncer.sync(self.data)
+
+		assert user.first_name == "Joe"
+		assert user.last_name == "Soap"
+		assert user.email == "joe@soap.com"
+		assert user.is_staff == True
+		assert user.is_superuser == True
+
 
 	@responses.activate
 	def test_authenticate(self):
@@ -32,12 +86,7 @@ class TokenAuthBackendTestCase(TestCase):
 		assert len(responses.calls) == 1, 'Expect only 1 call'
 		assert user.username == "joe.soap", 'Expect the correct user to be returned'
 
-	@responses.activate
-	def test_authenticate_creates_new_user(self):
-
-		# setup:		
-		mock_auth_success()
-
+	
 	@responses.activate
 	def test_authentication_fails(self):
 
