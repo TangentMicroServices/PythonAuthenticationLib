@@ -9,9 +9,10 @@ import requests
 import responses
 import mock
 
-class TokenAuthBackendTestCase(TestCase):
-
+class UserSyncronizerTestCase(TestCase):
+	
 	def setUp(self):
+		
 		self.data = {
 		  "id": 1,
 		  "first_name": "Joe",
@@ -32,7 +33,7 @@ class TokenAuthBackendTestCase(TestCase):
 	def tearDown(self):
 		for user in User.objects.all(): user.delete()
 
-	def test__sync_user_new_user(self):
+	def test_sync_new_user(self):
 
 		syncer = UserSyncronizer()
 		user = syncer.sync(self.data)
@@ -45,7 +46,7 @@ class TokenAuthBackendTestCase(TestCase):
 		assert new_user.is_staff == True
 		assert new_user.is_superuser == True
 
-	def test__sync_user_existing_user(self):
+	def test_sync_existing_user(self):
 
 		data = {
 			"id": 1, 
@@ -67,6 +68,7 @@ class TokenAuthBackendTestCase(TestCase):
 		assert user.is_staff == True
 		assert user.is_superuser == True
 
+class TokenAuthBackendTestCase(TestCase):
 
 	@responses.activate
 	def test_authenticate(self):
