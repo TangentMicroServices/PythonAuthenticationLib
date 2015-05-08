@@ -56,7 +56,8 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'tokenauth.authbackends.TokenAuthBackend'
+    'tokenauth.authbackends.TokenAuthBackend',
+    'tokenauth.authbackends.UserServiceAuthBackend'
 )
 
 

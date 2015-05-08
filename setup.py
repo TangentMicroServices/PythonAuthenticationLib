@@ -8,6 +8,7 @@ setup(
     name='tokenauth',
     version='0.0.1',
     author=u'Tangent Solutions',
+    author_email=u'admin@tangentsolutions.co.za',
     packages=['tokenauth'],
     include_package_data=True,
     install_requires=required,

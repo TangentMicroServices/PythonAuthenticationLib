@@ -11,6 +11,15 @@ class UserSyncronizer(object):
     fields = ['id', 'first_name', 'last_name', 'username', 
               'email', 'is_staff', 'is_superuser']
 
+    def fetch_user_from_service(self, token):
+
+        headers = {
+            'content-type': 'application/json', 
+            'Authorization':'Token {0}' . format (token)
+        }
+        url = '{0}/api/v1/users/me/' . format(settings.USERSERVICE_BASE_URL)
+        return requests.get(url, headers=headers)
+
     def map_user_data(self, data):
         user_data = {}
         for field in self.fields: 
@@ -38,27 +47,51 @@ class UserSyncronizer(object):
 
 class TokenAuthBackend(object):
 
-    def _fetch_user(self, token):
-
-        headers = {
-            'content-type': 'application/json', 
-            'Authorization':'Token {0}' . format (token)
-        }
-        url = '{0}/api/v1/users/me/' . format(settings.USERSERVICE_BASE_URL)
-        return requests.get(url, headers=headers)
+    def __init__(self):
+        self.syncer = UserSyncronizer()
 
     def authenticate(self, token):
         '''
         Will authenticate a user based on the token provided against the UserService
-        '''
-        print "authenticate: {0}" . format(token)
-        response = self._fetch_user(token)
+        '''        
+        response = self.syncer.fetch_user_from_service(token)
 
         if response.status_code == 200:
-            syncer = UserSyncronizer()
-            user = syncer.sync(response.json())
+            user = self.syncer.sync(response.json())
             return user
         return None
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
+
+class UserServiceAuthBackend(object):
+
+    def __init__(self):
+        self.syncer = UserSyncronizer()
+
+    def authenticate(self, username, password):
+        '''
+        Will authenticate a user against the UserService
+        '''
+        
+        url = '{0}/api-token-auth/' . format(settings.USERSERVICE_BASE_URL)
+        response=requests.post(url, data={"username":username, "password":password})
+        
+        if response.status_code == 200:
+            token = response.json().get("token")
+            user_response = self.syncer.fetch_user_from_service(token)
+            user = self.syncer.sync(user_response.json())
+            return user
+        return None
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
 
 
 class RESTTokenAuthBackend(authentication.BaseAuthentication):
