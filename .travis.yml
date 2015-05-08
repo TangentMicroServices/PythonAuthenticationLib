@@ -1,6 +1,13 @@
 language: python
 python:
 - '2.7'
-#- '3.4'
 - pypy
 script: example/manage.py test
+deploy:
+  provider: pypi
+  user: toast38coza
+  password:
+    secure: ctsW5MCrm6/UkFUBF13/9b/0lbSZ5krSAZzrkXaeXXLVS/Nhkr5gXN1Fsjo4yUER15iAanczpmDg7brJYH2W7cO7ZCqwDW85R6Fb0FqZnuSxSDnlALzJ24ZWTVbIJmjax1UUDyJwf2dFNQPiUV0lECfBfqzrwTQEgXZjuZ8QEDg=
+  on:
+    tags: true
+    repo: TangentMicroServices/PythonAuthenticationLib
