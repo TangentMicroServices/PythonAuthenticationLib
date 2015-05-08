@@ -5,8 +5,8 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setup(
-    name='tokenauth',
-    version='0.0.1',
+    name='tangent-tokenauth',
+    version='0.0.2',
     author=u'Tangent Solutions',
     author_email=u'admin@tangentsolutions.co.za',
     packages=['tokenauth'],

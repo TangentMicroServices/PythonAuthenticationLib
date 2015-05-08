@@ -42,6 +42,10 @@ class UserSyncronizer(object):
 
         except User.DoesNotExist:
             user = User(**user_data)
+
+        if user.last_login is None:
+            user.last_login = timezeon.now()
+            
         user.save()
         return user
 
@@ -76,7 +80,7 @@ class UserServiceAuthBackend(object):
         '''
         Will authenticate a user against the UserService
         '''
-        
+
         url = '{0}/api-token-auth/' . format(settings.USERSERVICE_BASE_URL)
         response=requests.post(url, data={"username":username, "password":password})
         
