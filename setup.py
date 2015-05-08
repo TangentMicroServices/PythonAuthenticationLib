@@ -6,7 +6,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='tangent-tokenauth',
-    version='0.0.3',
+    version='0.1.0',
     author=u'Tangent Solutions',
     author_email=u'admin@tangentsolutions.co.za',
     packages=['tokenauth'],
