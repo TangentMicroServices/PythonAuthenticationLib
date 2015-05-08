@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from rest_framework import authentication
 from rest_framework import exceptions
 from rest_framework.permissions import SAFE_METHODS
+from django.utils import timezone
+
 
 class UserSyncronizer(object):
 
@@ -44,8 +46,8 @@ class UserSyncronizer(object):
             user = User(**user_data)
 
         if user.last_login is None:
-            user.last_login = timezeon.now()
-            
+            user.last_login = timezone.now()
+
         user.save()
         return user
 
