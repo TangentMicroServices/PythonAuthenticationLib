@@ -4,7 +4,7 @@ A library for authenticating against the UserService
 
 ## Installation
 
-	pip install tokenauth
+	pip install tangent-tokenauth
 
 ## Usage 
 
