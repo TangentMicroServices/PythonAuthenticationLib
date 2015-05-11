@@ -2,6 +2,7 @@ language: python
 python:
 - '2.7'
 - pypy
+install: pip install -r example/requirements.txt
 script: example/manage.py test
 deploy:
   provider: pypi
